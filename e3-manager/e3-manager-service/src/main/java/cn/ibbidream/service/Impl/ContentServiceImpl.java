@@ -1,14 +1,19 @@
 package cn.ibbidream.service.Impl;
 
 import cn.ibbidream.common.EasyUIDataGridResult;
+import cn.ibbidream.jedis.JedisClient;
+import cn.ibbidream.jedis.JedisClientPool;
 import cn.ibbidream.mapper.TbContentMapper;
 import cn.ibbidream.pojo.TbContent;
 import cn.ibbidream.pojo.TbContentExample;
 import cn.ibbidream.service.ContentService;
 import cn.ibbidream.utils.E3Result;
+import cn.ibbidream.utils.JsonUtils;
+import com.alibaba.dubbo.common.utils.StringUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,6 +31,12 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private TbContentMapper contentMapper;
+
+    @Autowired
+    private JedisClient jedis;
+
+    @Value("${CONTENT_KEY}")
+    private String CONTENT_KEY;
 
     @Override
     public EasyUIDataGridResult getContentList(Integer page, Integer rows, Long categoryId) {
@@ -57,6 +68,10 @@ public class ContentServiceImpl implements ContentService {
         content.setUpdated(date);
         //保存
         contentMapper.insert(content);
+
+        //数据变动 删除缓存
+        jedis.hdel(CONTENT_KEY,content.getCategoryId().toString());
+
         return E3Result.ok();
     }
 
@@ -71,6 +86,10 @@ public class ContentServiceImpl implements ContentService {
         content.setCreated(tbContent.getCreated());
         //保存信息
         contentMapper.updateByPrimaryKeyWithBLOBs(content);
+
+        //数据变动 删除缓存
+        jedis.hdel(CONTENT_KEY,content.getCategoryId().toString());
+
         return E3Result.ok();
     }
 
@@ -79,10 +98,47 @@ public class ContentServiceImpl implements ContentService {
 
         for (String i:ids) {
             long id = Long.parseLong(i);
+
+            TbContent content = contentMapper.selectByPrimaryKey(id);
+            //数据变动 删除缓存
+            jedis.hdel(CONTENT_KEY,content.getCategoryId().toString());
+
             contentMapper.deleteByPrimaryKey(id);
         }
 
         return E3Result.ok();
+    }
+
+    @Override
+    public List<TbContent> getContentList(Long cid) {
+        // 1、从缓存中取数据，如果有则直接返回
+        try {
+            String json = jedis.hget(CONTENT_KEY, cid + "");
+            //判断json是否为空
+            if(StringUtils.isNotEmpty(json)){
+                //把json转换成list
+                List<TbContent> list = JsonUtils.jsonToList(json, TbContent.class);
+                return list;
+            }
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        TbContentExample example = new TbContentExample();
+        TbContentExample.Criteria criteria = example.createCriteria();
+        // 根据cid 查询列表
+        criteria.andCategoryIdEqualTo(cid);
+
+        List<TbContent> list = contentMapper.selectByExampleWithBLOBs(example);
+
+        // 执行到这里，证明缓存中没有，将查询结果放到缓存中
+        try {
+            jedis.hset(CONTENT_KEY,cid + "", JsonUtils.objectToJson(list));
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return list;
     }
 
 }

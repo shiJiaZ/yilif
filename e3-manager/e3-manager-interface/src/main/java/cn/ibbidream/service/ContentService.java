@@ -4,6 +4,8 @@ import cn.ibbidream.common.EasyUIDataGridResult;
 import cn.ibbidream.pojo.TbContent;
 import cn.ibbidream.utils.E3Result;
 
+import java.util.List;
+
 /**
  * @Description:
  * @author: ShiJia
@@ -17,4 +19,5 @@ public interface ContentService {
     E3Result addContent(TbContent content);
     E3Result toContentEdit(TbContent content);
     E3Result deleteContent(String[] ids);
+    List<TbContent> getContentList(Long cid);
 }

@@ -23,6 +23,6 @@
     <!-- 引用dubbo服务 name消费者服务名 -->
     <dubbo:application name="e3-portal-web"/>
     <dubbo:registry protocol="zookeeper" address="192.168.10.11:2181,192.168.10.12:2181,192.168.10.13:2181"/>
-    <!--<dubbo:reference interface="cn.ibbidream.service.ItemService" id="itemService" />-->
+    <dubbo:reference interface="cn.ibbidream.service.ContentService" id="contentService" />
 
 </beans>
