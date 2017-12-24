@@ -21,9 +21,6 @@ public class PageController {
 
     @RequestMapping("/{page}")
     public String showPage(@PathVariable String page) {
-
-        System.out.println(page);
-
         return page;
     }
 

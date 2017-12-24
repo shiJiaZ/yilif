@@ -2,6 +2,7 @@ package cn.ibbidream.pojo;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 public class TbItem implements Serializable{
     private Long id;
