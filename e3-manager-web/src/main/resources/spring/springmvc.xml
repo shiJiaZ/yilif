@@ -27,6 +27,8 @@
     <dubbo:registry protocol="zookeeper" address="192.168.10.11:2181,192.168.10.12:2181,192.168.10.13:2181"/>
     <dubbo:reference interface="cn.ibbidream.service.ItemService" id="itemService" />
     <dubbo:reference interface="cn.ibbidream.service.ItemCatService" id="itemCatService"/>
+    <dubbo:reference interface="cn.ibbidream.service.ContentCategoryService" id="contentCategoryService"/>
+    <dubbo:reference interface="cn.ibbidream.service.ContentService" id="contentService"/>
 
     <!-- 定义文件上传解析器 -->
     <bean id="multipartResolver"

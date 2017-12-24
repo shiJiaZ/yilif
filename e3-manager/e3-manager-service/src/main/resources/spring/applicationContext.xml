@@ -18,6 +18,8 @@
     <!-- 声明需要暴露的服务接口 -->
     <dubbo:service interface="cn.ibbidream.service.ItemService" ref="itemServiceImpl" />
     <dubbo:service interface="cn.ibbidream.service.ItemCatService" ref="itemCatServiceImpl"/>
+    <dubbo:service interface="cn.ibbidream.service.ContentCategoryService" ref="contentCategoryServiceImpl"/>
+    <dubbo:service interface="cn.ibbidream.service.ContentService" ref="contentServiceImpl"/>
 
     <import resource="classpath:spring/applicationContext-dao.xml"/>
     <import resource="classpath:spring/applicationContext-trans.xml"/>
