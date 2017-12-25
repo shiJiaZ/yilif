@@ -9,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.List;
+
 /**
  * @Description:
  * @author: ShiJia
@@ -37,6 +39,15 @@ public class ContentController {
         E3Result result = contentService.addContent(content);
 
         return result;
+    }
+
+    @RequestMapping(value = "test")
+    @ResponseBody
+    public List<TbContent> getTestList(Long cid){
+
+        List<TbContent> list = contentService.getContentList(cid);
+
+        return list;
     }
 
 
